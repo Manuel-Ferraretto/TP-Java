@@ -1,0 +1,141 @@
+@charset "ISO-8859-1";
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #b3b3b3;
+}
+
+.form-login h3{
+    margin: 0;
+    text-align: center;
+    height: 40px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid;
+    font-size: 20px;
+
+}
+
+.form-login{
+    width: 400px;
+    height: 450px;
+    background: #4e4d4d;
+    margin: auto;
+    margin-top: 180px;
+    box-shadow: 7px 13px 37px #000;
+    padding: 20px 30px;
+    color: white;
+    border-radius: 10px;
+}
+
+
+.login{
+    background-color:gainsboro;
+    text-align: center;
+}
+
+.form-createaccount{
+    width: 600px;
+    height: 800px;
+    background: #4e4d4d;
+    margin: auto;
+    margin-top: 30px;
+    box-shadow: 7px 13px 37px #000;
+    padding: 20px 30px;
+    color: white;
+    border-radius: 10px;
+}
+
+.form-createaccount h3{
+    margin: 0;
+    text-align: center;
+    height: 40px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid;
+    font-size: 20px;
+
+}
+
+.input-button{
+    border-radius: 2px;
+    width: 100%;
+    background: blue;
+    color: white;
+    transition: 0.45s;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 11px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+
+.input-button:hover{
+    background-color:#017bab;
+    color: white;
+    opacity: 1;
+}
+
+.input{
+    width: 100% ;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding: 11px 10px;
+    background: #252323;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form-login p{
+    height: 40px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.form-login a{
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+a{
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.mensajes-confirmacion{
+    width: 400px;
+    height: 200px;
+    background: #4e4d4d;
+    margin: auto;
+    margin-top: 180px;
+    box-shadow: 7px 13px 37px #000;
+    padding: 20px 30px;
+    color: white;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.form-login .message{
+    margin: 15px 0 0;
+    color: #b3b3b3;
+    font-size: 12px;
+}
+
+.form-login .message a{
+    color: #06c5cf;
+    text-decoration: none;
+}
+
+
+
+
+
+
