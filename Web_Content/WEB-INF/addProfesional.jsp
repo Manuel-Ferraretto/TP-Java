@@ -23,6 +23,13 @@ LinkedList<LocalTime> horas = (LinkedList<LocalTime>)request.getAttribute("horas
 <body>
 <br>
 <p class="text-end"><a href= "ProfesionalesServlet?accion=listar" >Volver al Listado</a></p>
+
+	<%if ((request.getAttribute("muestraMensaje"))!=null) { %>
+		<p class="alert alert-primary" role="alert"> <%=request.getAttribute("muestraMensaje")%> </p>		
+	<% } %>
+
+
+
 <div class="container">
 		<div class="row">
 			<div class="col-2"></div>
@@ -53,17 +60,34 @@ LinkedList<LocalTime> horas = (LinkedList<LocalTime>)request.getAttribute("horas
 			<label for="apellido">Ingrese el email del profesional</label> <br>
 			<input type="text" class="form-control" name="email"> <br>
 		</div>
+						
+		<div>
+			Seleccione especialidad del nuevo profesional
+			<select name="codigo_especialidad" class="form-select" aria-label="Default select example">
+				<% for (Especialidad e: le) { %>
+					<option value="<%=e.getCodigo_esp() %>"><%=e.getNombre() %></option>
+					 <% } %>
+			</select>
+		</div>
 		
 		<div>
-		<label for="estado">Ingrese especialidad del profesional</label>
-		 <% for (Especialidad e : le) { %>
-			<div class="form-check">
-				<input class="form-check-input" type="radio" name="codigo_especialidad"
-					id="exampleRadios1" value="<%=e.getCodigo_esp() %>" required > <label
-					class="form-check-label" for="exampleRadios1"> <%=e.getNombre() %> </label>
-			</div>
-		<%} %>
+			Seleccione hora inicio de jornada laboral:
+			<select name="hora_inicio" class="form-select" aria-label="Default select example">   		
+	        <% for (LocalTime horaInicio: horas) { %>              	
+                	<option value="<%=horaInicio%>"><%=horaInicio%></option>
+                <% } %>
+             </select>
 		</div>
+		
+		<div>
+			Seleccione hora fin de jornada laboral:   		
+	        <select name="hora_fin" class="form-select" aria-label="Default select example">   		
+	        <% for (LocalTime horaFin: horas) { %>              	
+                	<option value=<%=horaFin%>><%=horaFin%></option>
+                <% } %>
+             </select>
+		</div>    
+        <br><br>
 		<input class="btn btn-primary btn-lg" type="submit" name="accion"
 			value="Add">
 	</form>

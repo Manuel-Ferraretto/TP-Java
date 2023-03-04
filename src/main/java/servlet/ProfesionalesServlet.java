@@ -58,7 +58,7 @@ public class ProfesionalesServlet extends HttpServlet {
 
 			profesionales = pc.getAll();
 			request.setAttribute("listaProfesionales", profesionales);
-			request.setAttribute("retro", request.getAttribute("estado"));
+			request.setAttribute("muestraMensaje", request.getAttribute("mensaje"));
 			request.getRequestDispatcher("WEB-INF/profesional.jsp").forward(request, response);
 			
 			
@@ -66,7 +66,7 @@ public class ProfesionalesServlet extends HttpServlet {
 			EspecialidadesController ec = new EspecialidadesController();
 			LinkedList<Especialidad> especialidades = null;
 			LinkedList<LocalTime> horas = new LinkedList<>();
-			LocalTime finishTime = LocalTime.of(10, 00);
+			LocalTime finishTime = LocalTime.of(15, 00);
 			LocalTime time = LocalTime.of(8, 00);
 			
 			/*
@@ -75,6 +75,14 @@ public class ProfesionalesServlet extends HttpServlet {
 				time.plusMinutes(45);
 			} */
 			
+			horas.add(LocalTime.of(8, 00)); horas.add(LocalTime.of(8, 30)); horas.add(LocalTime.of(9, 00));
+			horas.add(LocalTime.of(9, 30)); horas.add(LocalTime.of(10, 00)); horas.add(LocalTime.of(10, 30)); 
+			horas.add(LocalTime.of(11, 00)); horas.add(LocalTime.of(11, 30)); horas.add(LocalTime.of(12, 00)); 
+			horas.add(LocalTime.of(12, 30)); horas.add(LocalTime.of(13, 00)); horas.add(LocalTime.of(13, 30));
+			horas.add(LocalTime.of(14, 00)); horas.add(LocalTime.of(14, 30)); horas.add(LocalTime.of(15, 00)); 
+			horas.add(LocalTime.of(15, 30)); horas.add(LocalTime.of(16, 00)); horas.add(LocalTime.of(16, 30)); 
+			horas.add(LocalTime.of(17, 00)); horas.add(LocalTime.of(17, 30)); horas.add(LocalTime.of(18, 00)); 
+			
 			try {
 				especialidades = ec.getAll();
 			} catch (SQLException e) {
@@ -82,45 +90,54 @@ public class ProfesionalesServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			request.setAttribute("listaEspecialidades", especialidades);
-			//request.setAttribute("horas", horas);
+			request.setAttribute("horas", horas);
 			request.getRequestDispatcher("WEB-INF/addProfesional.jsp").forward(request, response);
 			
 			
 		} else if (accion.equalsIgnoreCase("Add")) {
-			ProfesionalController profesionalController = new ProfesionalController();
-			EspecialidadesController especialidadController = new EspecialidadesController();
-			boolean matriculaValida = profesionalController.validarMatricula(request.getParameter("matricula"));
-			boolean emailValido = profesionalController.validarEmail(request.getParameter("email"));
+			LocalTime horaInicio = LocalTime.parse(request.getParameter("hora_inicio"));
+			LocalTime horaFin = LocalTime.parse(request.getParameter("hora_fin"));
+			
+			if (horaInicio.isBefore(horaFin)) {
+				ProfesionalController profesionalController = new ProfesionalController();
+				EspecialidadesController especialidadController = new EspecialidadesController();
+				boolean existeMatricula = profesionalController.validarMatricula(request.getParameter("matricula"));
+				boolean existeEmail = profesionalController.validarEmail(request.getParameter("email"));
 
-			if (matriculaValida == true && emailValido == true) {
-				Especialidad especialidad = new Especialidad();
-				try {
-					especialidad = especialidadController.getByCodigo(
-														Integer.parseInt(request.getParameter("codigo_especialidad")));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					if (existeMatricula == false && existeEmail == false) {
+						Especialidad especialidad = new Especialidad();
+						try {
+							especialidad = especialidadController.getByCodigo(
+																Integer.parseInt(request.getParameter("codigo_especialidad")));
+						} catch (NumberFormatException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						Profesional nuevoProfesional = new Profesional(
+																		request.getParameter("matricula"),
+																		request.getParameter("email"),
+																		request.getParameter("nombre"),
+																		request.getParameter("apellido"),
+																		LocalTime.parse(request.getParameter("hora_inicio")),
+																		LocalTime.parse(request.getParameter("hora_fin")),
+																		especialidad
+																		);
+						profesionalController.add(nuevoProfesional);
+						request.setAttribute("mensaje", "Profesional agregado correctamente.");
+						request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);
+						} 
+					else {
+							request.setAttribute("estado", "Ya existe profesional con email o matricula ingresada");
+							request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);	
+						}
+				} else {
+					request.setAttribute("mensaje", "La hora inicio debe ser anterior a la hora de fin de jornada laboral");
+					request.getRequestDispatcher("ProfesionalesServlet?accion=agregar").forward(request, response);
 				}
-				
-				Profesional nuevoProfesional = new Profesional(
-																request.getParameter("matricula"),
-																request.getParameter("email"),
-																request.getParameter("nombre"),
-																request.getParameter("apellido"),
-																LocalTime.parse(request.getParameter("hora_inicio")),
-																LocalTime.parse(request.getParameter("hora_fin")),
-																especialidad
-																);
-				
-				request.setAttribute("estado", "Profesional agregado correctamente.");
-				request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);
-			} else {
-				request.setAttribute("estado", "Profesional ingresado ya existe con ese Email o Matricula.");
-				request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);
-			}
 
 			
 		} else if (accion.equalsIgnoreCase("Editar")) {
@@ -128,6 +145,16 @@ public class ProfesionalesServlet extends HttpServlet {
 			ProfesionalController pc = new ProfesionalController();
 			EspecialidadesController ec = new EspecialidadesController();
 			LinkedList<Especialidad> especialidades = null;
+			LinkedList<LocalTime> horas = new LinkedList<>();
+			
+			horas.add(LocalTime.of(8, 00)); horas.add(LocalTime.of(8, 30)); horas.add(LocalTime.of(9, 00));
+			horas.add(LocalTime.of(9, 30)); horas.add(LocalTime.of(10, 00)); horas.add(LocalTime.of(10, 30)); 
+			horas.add(LocalTime.of(11, 00)); horas.add(LocalTime.of(11, 30)); horas.add(LocalTime.of(12, 00)); 
+			horas.add(LocalTime.of(12, 30)); horas.add(LocalTime.of(13, 00)); horas.add(LocalTime.of(13, 30));
+			horas.add(LocalTime.of(14, 00)); horas.add(LocalTime.of(14, 30)); horas.add(LocalTime.of(15, 00)); 
+			horas.add(LocalTime.of(15, 30)); horas.add(LocalTime.of(16, 00)); horas.add(LocalTime.of(16, 30)); 
+			horas.add(LocalTime.of(17, 00)); horas.add(LocalTime.of(17, 30)); horas.add(LocalTime.of(18, 00)); 
+			
 			try {
 				especialidades = ec.getAll();
 			} catch (SQLException e) {
@@ -135,6 +162,7 @@ public class ProfesionalesServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			p = pc.getByMatricula(request.getParameter("matricula"));
+			request.setAttribute("horas", horas);
 			request.setAttribute("profesional", p);
 			request.setAttribute("listaEspecialidades", especialidades);
 			request.getRequestDispatcher("WEB-INF/editProfesional.jsp").forward(request, response);

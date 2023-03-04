@@ -1,9 +1,12 @@
 package dataBase;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.LinkedList;
 
@@ -229,13 +232,16 @@ public class DataProfesionales {
 		PreparedStatement stmt = null;
 		try {
 			stmt = DbConnector.getInstancia().getConn().prepareStatement(
-					"insert into profesionales(matricula,nombre,apellido,email,cod_especialidad,estado) values(?,?,?,?,?,?,?)");
+					"insert into profesionales(matricula, nombre, apellido, email, cod_especialidad, estado, hora_inicio, hora_fin) \r\n"
+					+ "values(?,?,?,?,?,?,?,?)");
 			stmt.setString(1, p2.getMatricula());
 			stmt.setString(2, p2.getNombre());
 			stmt.setString(3, p2.getApellido());
 			stmt.setString(4, p2.getEmail());
-			stmt.setInt(6, p2.getEspecialidad().getCodigo_esp());
-			stmt.setInt(7, p2.getEstado());
+			stmt.setInt(5, p2.getEspecialidad().getCodigo_esp());
+			stmt.setInt(6, p2.getEstado());
+			stmt.setTime(7, Time.valueOf(p2.getHora_inicio()));
+			stmt.setTime(8, Time.valueOf(p2.getHora_fin()));
 			stmt.executeUpdate();
 
 		} catch (SQLException e) {
@@ -306,14 +312,17 @@ public class DataProfesionales {
 		ResultSet rs = null;
 		try {
 			stmt = DbConnector.getInstancia().getConn().prepareStatement(
-					"update profesionales set matricula=?,nombre=?,apellido=?,email=?,cod_especialidad=?,estado=? where matricula=? ");
+					"update profesionales set matricula=?, nombre=?, apellido=?, email=?, cod_especialidad=?, \r\n"
+					+ "estado=?, hora_inicio=?, hora_fin=? where matricula=? ");
 			stmt.setString(1, p2.getMatricula());
 			stmt.setString(2, p2.getNombre());
 			stmt.setString(3, p2.getApellido());
 			stmt.setString(4, p2.getEmail());
 			stmt.setInt(5, p2.getEspecialidad().getCodigo_esp());
 			stmt.setInt(6, p2.getEstado());
-			stmt.setString(7, matricula);
+			stmt.setTime(7, Time.valueOf(p2.getHora_inicio()));
+			stmt.setTime(8, Time.valueOf(p2.getHora_fin()));
+			stmt.setString(9, matricula);
 
 			stmt.executeUpdate();
 
@@ -412,7 +421,7 @@ public class DataProfesionales {
 	public boolean validarMatricula(String matricula) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		boolean matriculaValida = true;
+		boolean existeMatricula = true;
 		String nuevaMatricula = null;
 
 		String consulta = "select matricula from profesionales where matricula=?";
@@ -445,15 +454,15 @@ public class DataProfesionales {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 		
-		if (nuevaMatricula == null) { matriculaValida = false;}
+		if (nuevaMatricula == null) { existeMatricula = false;}
 		
-		return matriculaValida;
+		return existeMatricula;
 	}
 	
 	public boolean validarEmail(String email) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		boolean emailValido = true;
+		boolean existeEmail = true;
 		String nuevoEmail = null;
 
 		String consulta = "select email from profesionales where email=?";
@@ -486,9 +495,9 @@ public class DataProfesionales {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 		
-		if (nuevoEmail == null) { emailValido = false;}
+		if (nuevoEmail == null) { existeEmail = false;}
 		
-		return emailValido;
+		return existeEmail;
 	}
 
 	public void modificarEstado(String matricula) {

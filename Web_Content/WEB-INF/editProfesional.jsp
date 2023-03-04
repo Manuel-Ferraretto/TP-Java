@@ -3,6 +3,7 @@
     <%@page import="entities.Profesional"%>
     <%@page import="entities.Especialidad"%>
     <%@page import="java.util.LinkedList"%>
+    <%@page import="java.time.LocalTime"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,6 +26,7 @@
 	<%
 	Profesional p = (Profesional) request.getAttribute("profesional");
 	LinkedList<Especialidad> le = (LinkedList<Especialidad>)request.getAttribute("listaEspecialidades");
+	LinkedList<LocalTime> horas = (LinkedList<LocalTime>)request.getAttribute("horas");
 	%>
 	<div class="container">
 		<div class="row">
@@ -75,6 +77,24 @@
 								</div>
 							<%} %>
 							</div>
+							
+								<div>
+									Seleccione hora inicio de jornada laboral:
+									<select name="hora_inicio" class="form-select" aria-label="Default select example">   		
+							        <% for (LocalTime horaInicio: horas) { %>              	
+						                	<option value="<%=horaInicio%>"><%=horaInicio%></option>
+						                <% } %>
+						             </select>
+								</div>
+								
+								<div>
+									Seleccione hora fin de jornada laboral:   		
+							        <select name="hora_fin" class="form-select" aria-label="Default select example">   		
+							        <% for (LocalTime horaFin: horas) { %>              	
+						                	<option value=<%=horaFin%>><%=horaFin%></option>
+						                <% } %>
+						             </select>
+								</div>    
 							
 							<input class="btn btn-primary btn-lg" type="submit" name="accion" value="Actualizar">
 						</form>

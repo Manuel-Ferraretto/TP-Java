@@ -21,8 +21,8 @@ LinkedList<Profesional> lp = (LinkedList<Profesional>)request.getAttribute("list
 <div>
 
 <br>
-<%if ((request.getAttribute("retro"))!=null) { %>
-		<p class="text-center"> <%=request.getAttribute("retro")%> </p>		
+<%if ((request.getAttribute("muestraMensaje"))!=null) { %>
+		<p class="alert alert-primary" role="alert"> <%=request.getAttribute("muestraMensaje")%> </p>		
 	<% } %>
 	<p class="text-center"> Advertencia: Recuerde que al eliminar un profesional de la clínica todos sus turnos serán eliminados</p>
 	<br>
