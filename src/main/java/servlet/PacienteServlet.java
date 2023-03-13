@@ -25,6 +25,7 @@ import entities.Profesional;
 import entities.Turnos;
 import logic.ComunicacionDb;
 import logic.EspecialidadesController;
+import logic.PacientesController;
 import logic.ProfesionalController;
 import logic.TurnosController;
 
@@ -54,19 +55,16 @@ public class PacienteServlet extends HttpServlet {
 		LinkedList<Turnos> turnosProfesionalActual = new LinkedList<>();
 		LinkedList<Paciente> turnosPacientes = new LinkedList<>();
 		LinkedList<Turnos> turnos = new LinkedList<>();
-		LinkedList<Profesional> profesionales = new LinkedList<>();
 		LinkedList<Especialidad> especialidades = new LinkedList<>();
-		EspecialidadesController espCtrl = new EspecialidadesController();
-		ComunicacionDb ctrl = new ComunicacionDb();
-		TurnosController t_ctrl = new TurnosController();
-		EspecialidadesController e_ctrl = new EspecialidadesController();
-		ProfesionalController p_ctrl = new ProfesionalController();
+		EspecialidadesController especialidadCtrl = new EspecialidadesController();
+		PacientesController pacienteController = new PacientesController();
+		TurnosController turnoCtrl = new TurnosController();
 		HttpSession session = request.getSession();
 		p = (Paciente) session.getAttribute("usuario");
 		
 		if ("misturnos".equals(opc)) {	
 			try {
-				turnosPacienteActual = ctrl.getTurnosPaciente(p);
+				turnosPacienteActual = pacienteController.getTurnosPaciente(p);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -75,9 +73,10 @@ public class PacienteServlet extends HttpServlet {
 			request.getRequestDispatcher("WEB-INF/misTurnos.jsp").forward(request, response); 
 		}
 		
+		
 		if ("reservar".equals(opc)) {
 			try {
-				especialidades = espCtrl.getAll();
+				especialidades = especialidadCtrl.getAll();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -85,21 +84,22 @@ public class PacienteServlet extends HttpServlet {
 			request.getRequestDispatcher("WEB-INF/elegirEspecialidad.jsp").forward(request, response); 
 		}
 		 
+		
 		if ("misdatos".equals(opc)) {
 			request.setAttribute("paciente", p);
 			request.getRequestDispatcher("WEB-INF/nuevosDatos.jsp").forward(request, response); 
 		}
 		
+		
 		if ("turnos_profesional".equals(opc)) {
 			prof = (Profesional)session.getAttribute("usuario");
 			try {
-				turnosProfesionalActual = ctrl.getTurnosProfesional(prof);
+				turnosProfesionalActual = turnoCtrl.getTurnosProfesional(prof);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			
 			try {
-				turnosPacientes = ctrl.getTurnosPacientesProfActual(prof);
+				turnosPacientes = turnoCtrl.getTurnosPacientesProfActual(prof);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -108,21 +108,6 @@ public class PacienteServlet extends HttpServlet {
 			request.getRequestDispatcher("WEB-INF/turnosProfesional.jsp").forward(request, response);
 		}
 		
-		/*
-		if ("hc".equals(opc)) {
-			turnos = t_ctrl.getAllTurnosPacienteActual(p);
-			try {
-				especialidades = e_ctrl.getNombreEspecialidades(p);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			profesionales = p_ctrl.getNombres(p);
-			request.setAttribute("usuario", p);
-			request.setAttribute("turnos", turnos);
-			request.setAttribute("especialidades", especialidades);
-			request.setAttribute("profesionales", profesionales);
-			request.getRequestDispatcher("WEB-INF/historiaClinica.jsp").forward(request, response);
-		} */
 		
 		if ("reservar2".equals(opc)) {
 			LocalDate initialDate = LocalDate.now().plusDays(7);

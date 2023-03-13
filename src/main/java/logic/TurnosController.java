@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import dataBase.DataTurnos;
 import entities.Paciente;
+import entities.Profesional;
 import entities.Turnos;
 
 public class TurnosController {
@@ -30,6 +31,14 @@ public class TurnosController {
 	
 	public Boolean validateAvailability(Turnos t) throws SQLException {
 		return dt.validateAvailability(t);
+	}
+	
+	public LinkedList<Turnos> getTurnosProfesional(Profesional p) throws SQLException{
+		return dt.getTurnosProfesional(p);
+	}
+	
+	public LinkedList<Paciente> getTurnosPacientesProfActual(Profesional p) throws SQLException{
+		return dt.getTurnosPacientesProfActual(p);
 	}
 
 }

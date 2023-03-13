@@ -185,4 +185,63 @@ public class DataTurnos {
 		
 		return availability;
 	}
+	
+	
+	public LinkedList<Turnos> getTurnosProfesional(Profesional p) throws SQLException{
+		LinkedList<Turnos> turnosProfesional = new LinkedList<>();
+		PreparedStatement stmt=null;
+		ResultSet rs=null;
+		String consulta = "select  t.hora_turno, t.hora_turno  \r\n"
+							+ "where t.matricula_prof = ?";
+		
+		stmt = DbConnector.getInstancia().getConn().prepareStatement(consulta);
+		stmt.setString(1, p.getMatricula());
+		rs = stmt.executeQuery();
+		
+		if (rs!=null) {
+			while(rs.next()) {
+				Turnos t = new Turnos();
+				t.setFecha_turno(rs.getObject("fecha_turno", LocalDate.class));
+				t.setHora_turno(rs.getObject("hora_turno", LocalTime.class));
+				turnosProfesional.add(t);
+					} // Fin del while
+		} // Fin del if
+		
+		if(rs!=null) {rs.close();}
+		if(stmt!=null) {stmt.close();}
+		DbConnector.getInstancia().releaseConn();
+		
+		return turnosProfesional;
+	}
+	
+	
+	public LinkedList<Paciente> getTurnosPacientesProfActual(Profesional p) throws SQLException{
+		LinkedList<Paciente> pacientes = new LinkedList<>();
+		PreparedStatement stmt=null;
+		ResultSet rs=null;
+		String consulta = "select p.nombre, p.apellido \r\n"
+				+ "from pacientes p \r\n"
+				+ "inner join turnos t \r\n"
+				+ "	on p.id = t.id_paciente \r\n"
+				+ "where t.matricula_prof = ?";
+		
+		stmt = DbConnector.getInstancia().getConn().prepareStatement(consulta);
+		stmt.setString(1, p.getMatricula());
+		rs = stmt.executeQuery();
+		
+		if (rs!=null) {
+			while(rs.next()) {
+				Paciente pac = new Paciente();
+				pac.setNombre(rs.getString("nombre"));
+				pac.setApellido(rs.getString("apellido"));
+				pacientes.add(pac);
+					} // Fin del while
+		} // Fin del if
+		
+		if(rs!=null) {rs.close();}
+		if(stmt!=null) {stmt.close();}
+		DbConnector.getInstancia().releaseConn();
+		
+		return pacientes;
+	}
 }

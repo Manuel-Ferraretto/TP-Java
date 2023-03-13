@@ -21,51 +21,7 @@ import logic.ObrasSocialesController;
 import logic.ProfesionalController;
 
 public class FuncionesDb {
-	public Paciente getByUser(Paciente p) throws SQLException {
-
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		Paciente pac = null;
-		ObrasSocialesController osCtrl = new ObrasSocialesController();
-		String consulta = "select id, dni, nombre, apellido, num_tel, email, id_obra_social \r\n"
-				+ " from pacientes where email=? and password=?";
-		try{
-			// Crear la conexión
-			stmt = DbConnector.getInstancia().getConn().prepareStatement(consulta);
-			
-			// Ejecutar la query
-			stmt.setString(1, p.getEmail());
-			stmt.setString(2, p.getPassword());
-			rs = stmt.executeQuery();
-			
-			// Mapeo de ResultSet a objeto
-			if(rs!= null && rs.next()) {
-				ObraSocial obraSocial = osCtrl.getByCodigo(rs.getInt("id_obra_social"));
-				pac = new Paciente(
-									rs.getInt("id"),
-									rs.getString("nombre"),
-									rs.getString("apellido"),
-									rs.getString("dni"),
-									rs.getString("num_tel"),
-									rs.getString("email"),
-									obraSocial
-									); 
-
-						} // Fin del if
-			
-			// Cerrar recursos
-			if(stmt!=null) {stmt.close();}
-			if(rs!=null) {rs.close();}
-			DbConnector.getInstancia().releaseConn(); 
-											
-		} catch(SQLException  ex) {
-			// Errores
-			System.out.println("SQLException: "+ ex.getMessage());
-			System.out.println("SQLState: "+ ex.getSQLState());
-			System.out.println("VendorError: "+ ex.getErrorCode());
-		}
-		return pac;
-} // Fin del getById
+	
 	
 	public LinkedList<Paciente> getAll() throws SQLException {
 		
@@ -403,41 +359,6 @@ public class FuncionesDb {
 		return esp_os;
 	}
 	
-	public LinkedList<Turnos> getTurnosPaciente(Paciente p) throws SQLException{
-		LinkedList<Turnos> turnosPaciente = new LinkedList<>();
-		PreparedStatement stmt=null;
-		ResultSet rs=null;
-		ProfesionalController profesionalCtrl = new ProfesionalController();
-		String consulta = "select t.numero, t.fecha_turno, t.hora_turno, t.matricula_prof, t.id_paciente \r\n"
-				+ "from turnos t \r\n"
-				+ "inner join pacientes p \r\n"
-				+ "	on t.id_paciente = p.id \r\n"
-				+ "where t.id_paciente = ?";
-		
-		stmt = DbConnector.getInstancia().getConn().prepareStatement(consulta);
-		stmt.setInt(1, p.getId());
-		rs = stmt.executeQuery();
-		
-		if (rs!=null) {
-			while(rs.next()) {
-				Profesional profesional = new Profesional();
-				profesional = profesionalCtrl.getByMatricula(rs.getString("matricula_prof"));
-				Turnos t = new Turnos(
-										rs.getInt("numero"),
-										rs.getObject("fecha_turno", LocalDate.class),
-										rs.getObject("hora_turno", LocalTime.class),
-										profesional
-										);
-				turnosPaciente.add(t);
-					} // Fin del while
-		} // Fin del if
-		
-		if(rs!=null) {rs.close();}
-		if(stmt!=null) {stmt.close();}
-		DbConnector.getInstancia().releaseConn();
-		
-		return turnosPaciente;
-	}
 	
 	public void cancelarTurno(Integer nro_turno) throws SQLException {
 		PreparedStatement stmt=null;
@@ -454,104 +375,6 @@ public class FuncionesDb {
 	} //fin cancelarTurno
 	
 	
-	/*
-	public Profesional getProfesionalByUser(Profesional p) throws SQLException {
-
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		Profesional prof = new Profesional();
-		String consulta = "select matricula, nombre, apellido, email, cod_especialidad \r\n"
-				+ " from profesionales where email=? and password=?";
-		try{
-			// Crear la conexión
-			stmt = DbConnector.getInstancia().getConn().prepareStatement(consulta);
-			
-			// Ejecutar la query
-			stmt.setString(1, p.getEmail());
-			stmt.setString(2, p.getPassword());
-			rs = stmt.executeQuery();
-			
-			// Mapeo de ResultSet a objeto
-			if(rs!= null && rs.next()) { 
-				prof.setMatricula(rs.getString("matricula"));
-				prof.setNombre(rs.getString("nombre"));
-				prof.setApellido(rs.getString("apellido"));
-				prof.setEmail(rs.getString("email"));
-				prof.setCod_especialidad(rs.getInt("cod_especialidad"));
-						} // Fin del if
-			
-			// Cerrar recursos
-			if(stmt!=null) {stmt.close();}
-			if(rs!=null) {rs.close();}
-			DbConnector.getInstancia().releaseConn(); 
-											
-		} catch(SQLException  ex) {
-			// Errores
-			System.out.println("SQLException: "+ ex.getMessage());
-			System.out.println("SQLState: "+ ex.getSQLState());
-			System.out.println("VendorError: "+ ex.getErrorCode());
-		}
-		return prof;
-} // Fin del getProfesionalById */
-	
-	
-	public LinkedList<Turnos> getTurnosProfesional(Profesional p) throws SQLException{
-		LinkedList<Turnos> turnosProfesional = new LinkedList<>();
-		PreparedStatement stmt=null;
-		ResultSet rs=null;
-		String consulta = "select  t.hora_turno, t.hora_turno  \r\n"
-							+ "where t.matricula_prof = ?";
-		
-		stmt = DbConnector.getInstancia().getConn().prepareStatement(consulta);
-		stmt.setString(1, p.getMatricula());
-		rs = stmt.executeQuery();
-		
-		if (rs!=null) {
-			while(rs.next()) {
-				Turnos t = new Turnos();
-				t.setFecha_turno(rs.getObject("fecha_turno", LocalDate.class));
-				t.setHora_turno(rs.getObject("hora_turno", LocalTime.class));
-				turnosProfesional.add(t);
-					} // Fin del while
-		} // Fin del if
-		
-		if(rs!=null) {rs.close();}
-		if(stmt!=null) {stmt.close();}
-		DbConnector.getInstancia().releaseConn();
-		
-		return turnosProfesional;
-	}
-	
-	public LinkedList<Paciente> getTurnosPacientesProfActual(Profesional p) throws SQLException{
-		LinkedList<Paciente> pacientes = new LinkedList<>();
-		PreparedStatement stmt=null;
-		ResultSet rs=null;
-		String consulta = "select p.nombre, p.apellido \r\n"
-				+ "from pacientes p \r\n"
-				+ "inner join turnos t \r\n"
-				+ "	on p.id = t.id_paciente \r\n"
-				+ "where t.matricula_prof = ?";
-		
-		stmt = DbConnector.getInstancia().getConn().prepareStatement(consulta);
-		stmt.setString(1, p.getMatricula());
-		rs = stmt.executeQuery();
-		
-		if (rs!=null) {
-			while(rs.next()) {
-				Paciente pac = new Paciente();
-				pac.setNombre(rs.getString("nombre"));
-				pac.setApellido(rs.getString("apellido"));
-				pacientes.add(pac);
-					} // Fin del while
-		} // Fin del if
-		
-		if(rs!=null) {rs.close();}
-		if(stmt!=null) {stmt.close();}
-		DbConnector.getInstancia().releaseConn();
-		
-		return pacientes;
-	}
-
 	public void actualizarDatosPaciente(Paciente p) throws SQLException {
 		PreparedStatement stmt=null;
 		String consulta = "update pacientes set email=?, password=?, num_tel=? \r\n"

@@ -131,7 +131,7 @@ public class ProfesionalesServlet extends HttpServlet {
 						request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);
 						} 
 					else {
-							request.setAttribute("estado", "Ya existe profesional con email o matricula ingresada");
+							request.setAttribute("mensaje", "Ya existe profesional con email o matricula ingresada");
 							request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);	
 						}
 				} else {
@@ -198,10 +198,10 @@ public class ProfesionalesServlet extends HttpServlet {
 																);
 				
 				profesionalController.update(profesional, request.getParameter("matricula"));
-				request.setAttribute("estado", "Profesional editado correctamente.");
+				request.setAttribute("mensaje", "Profesional editado correctamente.");
 				request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);
 			} else {
-				request.setAttribute("estado", "Profesional ingresado ya existe con ese Email o Matricula.");
+				request.setAttribute("mensaje", "Profesional ingresado ya existe con ese Email o Matricula.");
 				request.getRequestDispatcher("ProfesionalesServlet?accion=listar").forward(request, response);
 			}
 			
@@ -216,7 +216,7 @@ public class ProfesionalesServlet extends HttpServlet {
 			t.setProfesional(profesionalAEliminar);
 			turnosController.deleteByMatricula(t.getProfesional().getMatricula());
 			profesionalController.delete(profesionalAEliminar);
-			request.setAttribute("estado", "Profesional eliminado exitosamente.");
+			request.setAttribute("mensaje", "Profesional eliminado exitosamente.");
 			request.getRequestDispatcher("ProfesionalesServlet?accion=Listar").forward(request, response);
 			
 		

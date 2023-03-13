@@ -19,7 +19,9 @@ import entities.Profesional;
 import entities.Turnos;
 import logic.ComunicacionDb;
 import logic.EspecialidadesController;
+import logic.PacientesController;
 import logic.ProfesionalController;
+import logic.TurnosController;
 
 @WebServlet({ "/ReservarTurno", "/reservarTurno", "/reservarturno" })
 public class ReservarTurno extends HttpServlet {
@@ -39,8 +41,10 @@ public class ReservarTurno extends HttpServlet {
 		Paciente p = new Paciente();
 		Especialidad esp = new Especialidad();
 		ComunicacionDb ctrl = new ComunicacionDb();
+		TurnosController turnoCtrl = new TurnosController();
 		ProfesionalController profesionalCtrl = new ProfesionalController();
 		EspecialidadesController espCtrl = new EspecialidadesController();
+		PacientesController pacienteController = new PacientesController();
 		HttpSession session = request.getSession();
 		PrintWriter out = response.getWriter();
 		Boolean bandera = true;
@@ -49,37 +53,36 @@ public class ReservarTurno extends HttpServlet {
 		int codigoEspecialidadElegida = Integer.parseInt(op);
 		
 		if (codigoEspecialidadElegida != 0) {
-	
 			profesionales = profesionalCtrl.getDisponiblesByEspecialidad(codigoEspecialidadElegida);
-			
 			p = (Paciente) session.getAttribute("usuario");
 			try {
-				turnosPacienteActual = ctrl.getTurnosPaciente(p);
+				turnosPacienteActual = pacienteController.getTurnosPaciente(p);
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
-			
+			}		
 			if (turnosPacienteActual != null) {
-				for (Turnos t:turnosPacienteActual) {
-					if (t.getProfesional().getEspecialidad().getCodigo_esp() == codigoEspecialidadElegida) { bandera = false; }
+				for (Turnos t: turnosPacienteActual) {
+					if (t.getProfesional().getEspecialidad().getCodigo_esp() == codigoEspecialidadElegida) { 
+						bandera = false; 
+						break;
+						}
 					}
-				}
-			
+				}	
 			if (bandera == true || turnosPacienteActual == null) {
 					request.setAttribute("profesionales", profesionales);
 					request.getRequestDispatcher("WEB-INF/elegirProfesional.jsp").forward(request, response); 
 			}
-				else {
-					try {
-						especialidades = espCtrl.getAll();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-					out.print("El usuario ya tiene un turno pendiente para la especialidad seleccionada"); 
-					request.setAttribute("especialidades", especialidades);
-					RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/elegirEspecialidad.jsp");
-					rd.include(request, response); 
-		
+			else {
+				try {
+					especialidades = espCtrl.getAll();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				request.setAttribute("especialidades", especialidades);
+				//request.setAttribute("mensaje", "El usuario ya tiene un turno pendiente para la especialidad elegida");
+				request.setAttribute("habilitarMensaje", true);
+				RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/elegirEspecialidad.jsp");
+				rd.include(request, response); 
 			}
 		} // fin del primer if 
 		

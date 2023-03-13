@@ -89,7 +89,7 @@ LinkedList<LocalTime> horas = (LinkedList<LocalTime>)request.getAttribute("horas
 		</div>    
         <br><br>
 		<input class="btn btn-primary btn-lg" type="submit" name="accion"
-			value="Add">
+			value="Agregar">
 	</form>
 	</div>
 				</div>

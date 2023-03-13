@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.Paciente;
 import logic.ComunicacionDb;
+import logic.ObrasSocialesController;
+import logic.PacientesController;
 
 
 @WebServlet({ "/CrearCuenta", "/crearcuenta", "/Crearcuenta", "/crearCuenta" })
@@ -28,53 +30,43 @@ public class CrearCuenta extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Paciente pac = new Paciente();
-		Paciente pac_aux = new Paciente();
-		Boolean encontrado = false;
 		ComunicacionDb ctrl = new ComunicacionDb();
+		PacientesController pacienteCtrl = new PacientesController();
+		ObrasSocialesController osController = new ObrasSocialesController();
 		PrintWriter out = response.getWriter();
 		
-		String nombre = request.getParameter("nombre");
-		String apellido = request.getParameter("apellido");
-		String dni = request.getParameter("dni");
-		String cel = request.getParameter("celular");
-		String email = request.getParameter("email");   
-		String password = request.getParameter("clave");
-		int id_os = Integer.parseInt(request.getParameter("obra_social"));
-		
-		// Validar que el usuario no exista
-		pac_aux.setEmail(email);
-		pac_aux.setPassword(password);
-			
+
+		// Validar que el email o dni no esté ya en uso
+		String email = request.getParameter("email");
+		String dni = request.getParameter("clave");
+	
 		try {
-			pac_aux = ctrl.validateLogin(pac_aux);
+			if (pacienteCtrl.existeUsuario(email, dni) == null) {
+				Paciente pac = new Paciente(
+								request.getParameter("nombre"),
+								request.getParameter("apellido"),
+								request.getParameter("dni"),
+								request.getParameter("celular"),
+								request.getParameter("email"),
+								request.getParameter("clave"),
+								osController.getByCodigo(Integer.parseInt(request.getParameter("codigo_os")))
+						);			
+				try {
+					ctrl.altaPaciente(pac);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				request.getRequestDispatcher("bienvenido.html").forward(request, response); 
+				}	
+				
+			else {
+				out.print("El usuario ingresado ya existe"); 
+				RequestDispatcher rd = request.getRequestDispatcher("\"WEB-INF/nuevaCuenta.jsp");
+				rd.include(request, response); 
+			}			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if (pac_aux != null){encontrado = true;}
-		
-		if (encontrado == false) {
-			pac.setEmail(email);
-			pac.setPassword(password);
-			pac.setNombre(nombre);
-			pac.setApellido(apellido);
-			pac.setDni(dni);
-			pac.setNum_tel(cel);
-			pac.setId_obra_social(id_os);			
-			try {
-				ctrl.altaPaciente(pac);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			request.getRequestDispatcher("bienvenido.html").forward(request, response); 
-			}	
-			
-		else {
-			out.print("El usuario ingresado ya existe"); 
-			RequestDispatcher rd = request.getRequestDispatcher("\"WEB-INF/nuevaCuenta.jsp");
-			rd.include(request, response); 
-		}
-					
 	}
 }
 

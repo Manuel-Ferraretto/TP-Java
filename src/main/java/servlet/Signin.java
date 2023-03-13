@@ -19,6 +19,7 @@ import entities.Profesional;
 import logic.AdministradorController;
 import logic.ComunicacionDb;
 import logic.ObrasSocialesController;
+import logic.PacientesController;
 
 @WebServlet({ "/Signin", "/signin", "/SignIn", "/SIGNIN", "/signIn" })
 public class Signin extends HttpServlet {
@@ -34,7 +35,7 @@ public class Signin extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		AdministradorController AdmCtrl= new AdministradorController();
-		ComunicacionDb ctrl = new ComunicacionDb();
+		PacientesController pacienteCtrl = new PacientesController();
 		PrintWriter out = response.getWriter();
 		
 		String username = request.getParameter("username");   // Recuperar información de un formulario html
@@ -56,7 +57,7 @@ public class Signin extends HttpServlet {
 		
 		else if(adm == null) {
 			try {
-				pac = ctrl.validateLogin(pac);
+				pac = pacienteCtrl.validateLogin(pac);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -64,10 +65,9 @@ public class Signin extends HttpServlet {
 
 			if (pac != null){
 			request.getSession().setAttribute("usuario", pac);
-			request.getRequestDispatcher("menu.html").forward(request, response); 
+			request.getRequestDispatcher("WEB-INF/menu.jsp").forward(request, response); 
 			}
 			else {
-				out.print("Credenciales invalidas, ingrese nuevamente"); 
 				RequestDispatcher rd = request.getRequestDispatcher("index.html");
 				rd.include(request, response); 
 			}

@@ -20,11 +20,6 @@ private FuncionesDb dc;
 		dc = new FuncionesDb();
 	}
 	
-	public Paciente validateLogin(Paciente c) throws SQLException {
-		
-		return dc.getByUser(c);		
-	}
-
 	public LinkedList<Paciente> getAll() throws SQLException {
 
 		return dc.getAll();
@@ -74,25 +69,11 @@ private FuncionesDb dc;
 		return dc.getPorcentajeCobertura(e, os);
 	}
 	
-	public LinkedList<Turnos> getTurnosPaciente(Paciente p) throws SQLException{
-		return dc.getTurnosPaciente(p);
-	}
 	
 	public void cancelarTurno(Integer nro_turno) throws SQLException {
 		dc.cancelarTurno(nro_turno);
 	}
 	
-	public Profesional getProfesionalByUser(Profesional p) throws SQLException {
-		return dc.getProfesionalByUser(p);
-	}
-	
-	public LinkedList<Turnos> getTurnosProfesional(Profesional p) throws SQLException{
-		return dc.getTurnosProfesional(p);
-	}
-	
-	public LinkedList<Paciente> getTurnosPacientesProfActual(Profesional p) throws SQLException{
-		return dc.getTurnosPacientesProfActual(p);
-	}
 	
 	public void actualizarDatosPaciente(Paciente p) throws SQLException {
 		dc.actualizarDatosPaciente(p);

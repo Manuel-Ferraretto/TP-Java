@@ -17,7 +17,7 @@
 <body>
 	<%
 		LinkedList<Especialidad> especialidades = (LinkedList<Especialidad>)request.getAttribute("especialidades");
-		Boolean aviso = (Boolean)request.getAttribute("aviso");
+		Boolean aviso = (Boolean)request.getAttribute("habilitarMensaje");
 	%>
  
 	<form action="ReservarTurno" method="post">
@@ -46,7 +46,7 @@
 		</div>
 	</form>
 	<br></br>
-	<% if (aviso!=null){ %>
+	<% if (aviso == true){ %>
 			<p class="text-warning">"El usuario ya tiene un turno pendiente para dicha especialidad</p>
 	<% }%>
 
